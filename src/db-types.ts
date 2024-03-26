@@ -40,6 +40,7 @@ export type Oauth2ClientsRecord = {
   client_id: string;
   client_secret: string;
   allowed_grant_types: string;
+  scopes: string;
   user_id: number;
   require_pkce: number;
 };

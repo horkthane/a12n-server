@@ -72,6 +72,7 @@ function mapRecordToModel(record: Oauth2ClientsRecord, app: App): OAuth2Client {
     app,
     allowedGrantTypes: record.allowed_grant_types.split(' ') as GrantType[],
     requirePkce: !!record.require_pkce,
+    scopes: record.scopes.split(' '),
   };
 
 }
@@ -130,6 +131,7 @@ export async function create(client: Omit<OAuth2Client, 'id'|'href'>, redirectUr
     user_id: client.app.id,
     allowed_grant_types: client.allowedGrantTypes.join(' '),
     require_pkce: client.requirePkce?1:0,
+    scopes: client.scopes.join(' '),
   };
 
   let result;
@@ -165,6 +167,7 @@ export async function edit(client: OAuth2Client, redirectUris: string[]): Promis
 
   const params: Partial<Oauth2ClientsRecord> = {
     allowed_grant_types: client.allowedGrantTypes.join(' '),
+    scopes: client.scopes.join(' '),
     require_pkce: client.requirePkce?1:0,
   };
 

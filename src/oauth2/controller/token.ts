@@ -21,6 +21,7 @@ class TokenController extends Controller {
 
     const supportedGrantTypes = ['client_credentials', 'authorization_code', 'refresh_token', 'password'];
     const grantType = ctx.request.body.grant_type;
+    const scopes = ctx.request.body.scope.split(' ');
 
     if (!supportedGrantTypes.includes(grantType)) {
       throw new UnsupportedGrantType('The "grant_type" must be one of ' + supportedGrantTypes.join(', '));
@@ -43,6 +44,12 @@ class TokenController extends Controller {
     if (!oauth2Client.allowedGrantTypes.includes(grantType)) {
       throw new UnsupportedGrantType('The current client is not allowed to use the ' + grantType + ' grant_type');
     }
+
+    scopes.forEach(function(value: string){
+      if(!oauth2Client.scopes.includes(value)){
+        throw new InvalidRequest('Client does not have access to the specified scope ' + value);
+      }
+    });
 
     switch (grantType) {
       case 'authorization_code' :

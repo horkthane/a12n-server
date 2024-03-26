@@ -64,6 +64,7 @@ class EditClientController extends Controller {
 
     client.allowedGrantTypes = allowedGrantTypes;
     client.requirePkce = ctx.request.body.requirePkce ?? false,
+    client.scopes = ctx.request.body.scopes.trim().split(/\r\n|\n/).filter((line:string) => !!line);
 
     await edit(client, redirectUris);
     ctx.redirect(303, client.href);

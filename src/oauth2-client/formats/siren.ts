@@ -5,12 +5,14 @@ type NewClientQuery = {
  allowedGrantTypes?: string;
  redirectUris?: string;
  requirePkce?: string;
+ scopes?: string;
 }
 
 export function newClient(user: App, query: NewClientQuery ) {
 
   const memberHref = user.href;
 
+  const scopes = query.scopes ? query.scopes.split(',').join('\n') : '';
   const redirectUris = query.redirectUris ? query.redirectUris.split(',').join('\n') : '';
   const allowedGrantTypes = query.allowedGrantTypes ? query.allowedGrantTypes.split(',') : [];
 
@@ -69,6 +71,12 @@ export function newClient(user: App, query: NewClientQuery ) {
             title: 'Redirect Uris (1 per line)',
             type: 'textarea',
             value: redirectUris
+          },
+          {
+            name: 'scopes',
+            title: 'Scopes (1 per line)',
+            type: 'textarea',
+            value: scopes
           },
           {
             name: 'requirePkce',

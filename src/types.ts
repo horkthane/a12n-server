@@ -119,6 +119,8 @@ export type OAuth2Client = {
    */
   allowedGrantTypes: GrantType[];
 
+  scopes: string[];
+
   /**
    * Require PKCE for authorization_code flows.
    */

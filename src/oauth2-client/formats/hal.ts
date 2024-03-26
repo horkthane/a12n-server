@@ -57,6 +57,7 @@ export function item(client: OAuth2Client, redirectUris: string[]): HalResource 
     },
     clientId: client.clientId,
     allowedGrantTypes: client.allowedGrantTypes,
+    scopes: client.scopes,
     redirectUris,
     requirePkce: client.requirePkce,
   };
@@ -122,6 +123,12 @@ export function editForm(client: OAuth2Client, redirectUris: string[]): HalResou
             value: redirectUris.join('\n'),
           },
           {
+            name: 'scopes',
+            prompt: 'Scopes (1 per line)',
+            type: 'textarea',
+            value: client.scopes.join('\n'),
+          },
+          {
             name: 'requirePkce',
             prompt: 'Require PKCE support (modern clients support this, but not everyone does)',
             type: 'checkbox',
@@ -144,6 +151,7 @@ export function newClientSuccess(client: OAuth2Client, redirectUris: string[] ,s
     clientId: client.clientId,
     clientSecret: secret,
     allowedGrantTypes: client.allowedGrantTypes,
+    scopes: client.scopes,
     redirectUris,
     requirePkce: client.requirePkce
   };

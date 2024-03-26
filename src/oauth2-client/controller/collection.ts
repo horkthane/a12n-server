@@ -55,6 +55,7 @@ class ClientCollectionController extends Controller {
     let clientId = ctx.request.body.clientId;
 
     const redirectUris = ctx.request.body.redirectUris.trim().split(/\r\n|\n/).filter((line:string) => !!line);
+    const scopes = ctx.request.body.scopes.trim().split(/\r\n|\n/).filter((line:string) => !!line);
 
     if (!clientId) {
       clientId = await generatePublicId();
@@ -73,6 +74,7 @@ class ClientCollectionController extends Controller {
       allowedGrantTypes: allowedGrantTypes,
       clientSecret: await bcrypt.hash(clientSecret, 12),
       requirePkce: ctx.request.body.requirePkce ?? false,
+      scopes: scopes 
     };
 
     const client = await create(newClient, redirectUris);

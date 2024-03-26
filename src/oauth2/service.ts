@@ -225,6 +225,7 @@ export function generateTokenDeveloperToken(options: GenerateTokenDeveloperToken
     allowedGrantTypes: [],
     requirePkce: false,
     href: '/system/client',
+    scopes: [],
     app: {
       id: 0,
       href:'/system',
