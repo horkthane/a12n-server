@@ -106,6 +106,8 @@ function getRawPrivateKey(): Buffer {
   // Some environment variable systems will convert the newline to a literal '\n'.
   // this is a safe operation, because the file should not contain any literal
   // backslashes.
-  return Buffer.from(key.replace(/\\n/gm, '\n'));
+  
+  // IISNODE sometimes adds double quotes to either end of this string, need to trim them off.
+  return Buffer.from(key.replace(/\"+/, '').replace(/\"+$/, '').replace(/\\n/gm, '\n'));
 
 }

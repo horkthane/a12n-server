@@ -66,8 +66,8 @@ export async function findByUser(user: Principal): Promise<LogEntry[]> {
 
 function isContext(ctx: any): ctx is Context {
 
-  return (ctx as Context).ip !== undefined;
-
+  return (ctx as Context) !== undefined && (ctx as Context).ip !== undefined;
+  
 }
 
 function getCountryByIp(ip: string): string|null {

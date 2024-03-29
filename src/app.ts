@@ -14,7 +14,9 @@ dotenv.config();
 const pkgInfo = require('../package.json');
 console.info('⚾ %s %s', pkgInfo.name, pkgInfo.version);
 
-const port = process.env.PORT ? parseInt(process.env.PORT, 10) :  8531;
+var temp_port = process.env.PORT ? parseInt(process.env.PORT, 10) :  8531;
+// iisnode hands it's own non-number port along.
+const port = Number.isNaN(temp_port) ? process.env.PORT : temp_port;
 
 if (!process.env.PUBLIC_URI) {
   process.env.PUBLIC_URI = 'http://localhost:' + port + '/';
@@ -35,6 +37,7 @@ if (!process.env.PUBLIC_URI) {
   }));
   app.use(mainMw());
 
+  // @ts-expect-error
   const httpServer = app.listen(port);
   if (process.env.KEEP_ALIVE_TIMEOUT_MS) {
     httpServer.keepAliveTimeout = parseInt(process.env.KEEP_ALIVE_TIMEOUT_MS, 10);
