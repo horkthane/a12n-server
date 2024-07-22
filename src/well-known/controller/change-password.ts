@@ -14,8 +14,9 @@ class WellKnownChangePassword extends Controller {
      * @param ctx Context object representing encapsulating the HTTP request.
      */
   async get(ctx: Context) {
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     ctx.status = 301;
-    ctx.response.headers.set('Location', '/change-password');
+    ctx.response.headers.set('Location', app_path + '/change-password');
   }
 }
 

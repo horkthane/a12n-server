@@ -10,6 +10,7 @@ type AccessTokenOptions = {
   client: OAuth2Client;
   expiry: number;
   scope: string[];
+  audience: string;
 }
 
 export async function generateJWTAccessToken(options: AccessTokenOptions): Promise<string> {
@@ -28,7 +29,7 @@ export async function generateJWTAccessToken(options: AccessTokenOptions): Promi
     })
     .setIssuedAt()
     .setIssuer(getGlobalOrigin())
-    .setAudience(options.client.app.href)
+    .setAudience(options.audience)
     .setSubject(options.principal.href)
     .setExpirationTime(Math.floor(Date.now() / 1000) + options.expiry)
     .setJti(jti)

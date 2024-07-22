@@ -36,10 +36,11 @@ class ResetPasswordController extends Controller {
     const user: User = ctx.session.resetPasswordUser;
     const resetNewPassword = ctx.request.body.newPassword;
     const confirmNewPassword = ctx.request.body.confirmNewPassword;
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
     if (resetNewPassword !== confirmNewPassword) {
       ctx.status = 303;
-      ctx.response.headers.set('Location', '/reset-password/change-password?error=New+password+mismatch.+Please+try+again');
+      ctx.response.headers.set('Location', app_path + '/reset-password/change-password?error=New+password+mismatch.+Please+try+again');
       return;
     }
 
@@ -48,7 +49,7 @@ class ResetPasswordController extends Controller {
     delete ctx.session.resetPasswordUser;
     log(EventType.resetPasswordSuccess, ctx.ip()!, user.id);
     ctx.status = 303;
-    ctx.response.headers.set('Location', '/login?msg=Your+new+password+has+been+saved');
+    ctx.response.headers.set('Location', app_path + '/login?msg=Your+new+password+has+been+saved');
 
   }
 }

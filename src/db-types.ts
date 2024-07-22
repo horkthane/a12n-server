@@ -89,6 +89,7 @@ export type Oauth2TokensRecord = {
    * OAuth2 scopes, space separated
    */
   scope: string | null;
+  audience: string;
 };
 export type PrincipalsRecord = {
   id: number;

@@ -38,10 +38,11 @@ class UserRegistrationController extends Controller {
      * We use an 'insecure' context for registration because it's anonymous
      */
     const principalService = new PrincipalService('insecure');
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
     if (userPassword !== confirmPassword) {
       ctx.status = 303;
-      ctx.response.headers.set('Location', '/register?' + new URLSearchParams({
+      ctx.response.headers.set('Location', app_path + '/register?' + new URLSearchParams({
         error: 'Password mismatch. Please try again',
         ...( body.continue ? {continue: body.continue} : {} )
       }));
@@ -51,7 +52,7 @@ class UserRegistrationController extends Controller {
     try {
       await principalService.findByIdentity('mailto:' + body.emailAddress);
       ctx.status = 303;
-      ctx.response.headers.set('Location', '/register?' + new URLSearchParams({
+      ctx.response.headers.set('Location', app_path + '/register?' + new URLSearchParams({
         error: 'User with this email adddress already exists',
         ...( body.continue ? {continue: body.continue} : {} )
       }));
@@ -90,7 +91,7 @@ class UserRegistrationController extends Controller {
       };
 
       ctx.response.status = 303;
-      ctx.response.headers.set('Location', '/register/mfa');
+      ctx.response.headers.set('Location', app_path + '/register/mfa');
       return;
     }
 
@@ -99,7 +100,7 @@ class UserRegistrationController extends Controller {
     if (body.continue) {
       ctx.response.headers.set('Location', body.continue);
     } else {
-      ctx.response.headers.set('Location', '/login?msg=Registration+successful.+Please log in');
+      ctx.response.headers.set('Location', app_path + '/login?msg=Registration+successful.+Please log in');
     }
 
   }

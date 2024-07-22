@@ -67,6 +67,8 @@ export type OAuth2Token = {
    * OpenID Connect idToken
    */
   idToken?: string;
+
+  audience: string;
 };
 
 export type OAuth2Code = {

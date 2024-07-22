@@ -15,6 +15,7 @@ type OtteRequest = {
   token: string;
   client_id: string;
   dontExpire?: boolean;
+  audience: string;
 }
 
 class OneTimeTokenExchangeController extends Controller {
@@ -46,6 +47,7 @@ class OneTimeTokenExchangeController extends Controller {
     const oauth2Token = await oauth2Service.generateTokenOneTimeToken({
       client,
       principal: user,
+      audience: ctx.request.body.audience,
     });
 
     ctx.response.body = tokenResponse(oauth2Token);

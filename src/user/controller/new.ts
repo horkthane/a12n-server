@@ -31,6 +31,7 @@ class CreateUserController extends Controller {
 
     const identity = ctx.request.body.identity;
     const nickname = ctx.request.body.nickname;
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
     if (!isIdentityValid(identity)) {
       throw new UnprocessableEntity('Identity must be a valid URI');
@@ -39,7 +40,7 @@ class CreateUserController extends Controller {
     try {
       await principalService.findByIdentity(ctx.request.body.identity);
       ctx.status = 303;
-      ctx.response.headers.set('Location', '/user/new?error=User+already+exists');
+      ctx.response.headers.set('Location', app_path + '/user/new?error=User+already+exists');
       return;
     } catch (err) {
       if (!(err instanceof NotFound)) {
@@ -57,7 +58,7 @@ class CreateUserController extends Controller {
     });
 
     ctx.response.status = 303;
-    ctx.response.headers.set('Location', '/user/' + newUser.id);
+    ctx.response.headers.set('Location', app_path + '/user/' + newUser.id);
 
   }
 

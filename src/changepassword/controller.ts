@@ -21,22 +21,23 @@ class ChangePasswordController extends Controller {
     const currentPassword = ctx.request.body.currentPassword;
     const userNewPassword = ctx.request.body.newPassword;
     const confirmNewPassword = ctx.request.body.confirmNewPassword;
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
     if (!await UserService.validatePassword(user, currentPassword)) {
       ctx.status = 303;
-      ctx.response.headers.set('Location', '/change-password?error=Current+password+isn\'t+correct.+Please+try+again');
+      ctx.response.headers.set('Location', app_path + '/change-password?error=Current+password+isn\'t+correct.+Please+try+again');
       return;
     }
 
     if (currentPassword === userNewPassword) {
       ctx.status = 303;
-      ctx.response.headers.set('Location', '/change-password?error=New+password+and+old+password+can\'t+be+the+same.+Please+try+again');
+      ctx.response.headers.set('Location', app_path + '/change-password?error=New+password+and+old+password+can\'t+be+the+same.+Please+try+again');
       return;
     }
 
     if (userNewPassword !== confirmNewPassword) {
       ctx.status = 303;
-      ctx.response.headers.set('Location', '/change-password?error=New+password+mismatch.+Please+try+again');
+      ctx.response.headers.set('Location', app_path + '/change-password?error=New+password+mismatch.+Please+try+again');
       return;
     }
 
@@ -47,7 +48,7 @@ class ChangePasswordController extends Controller {
     };
     log(EventType.changePasswordSuccess, ctx);
     ctx.status = 303;
-    ctx.response.headers.set('Location', '/');
+    ctx.response.headers.set('Location', app_path + '/');
 
   }
 

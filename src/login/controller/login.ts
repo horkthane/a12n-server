@@ -16,10 +16,10 @@ import { loginForm } from '../formats/html';
 class LoginController extends Controller {
 
   async get(ctx: Context) {
-
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     const continueParam = ctx.query.continue ? '?' + new URLSearchParams({continue: ctx.query.continue}) : '';
-    const registrationUri = '/register' + continueParam;
-    const resetPasswordUri = '/reset-password' + continueParam;
+    const registrationUri = app_path + '/register' + continueParam;
+    const resetPasswordUri = app_path + '/reset-password' + continueParam;
 
     const firstRun = !(await hasUsers());
     if (firstRun) {
@@ -89,12 +89,13 @@ class LoginController extends Controller {
 
   redirectToLogin(ctx: Context<any>, msg: string, error: string) {
 
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     const params: any = { msg, error };
     if (ctx.request.body?.continue) {
       params['continue'] = ctx.request.body.continue;
     }
     ctx.response.status = 303;
-    ctx.response.headers.set('Location', '/login?' + querystring.stringify(params));
+    ctx.response.headers.set('Location', app_path + '/login?' + querystring.stringify(params));
 
   }
 
@@ -182,11 +183,12 @@ class LoginController extends Controller {
 
   redirectToMfa(ctx: Context, redirectUrl: string) {
 
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     ctx.response.status = 303;
     if (redirectUrl) {
-      ctx.response.headers.set('Location', '/login/mfa?' + querystring.stringify({ 'continue': redirectUrl }));
+      ctx.response.headers.set('Location', app_path + '/login/mfa?' + querystring.stringify({ 'continue': redirectUrl }));
     } else {
-      ctx.response.headers.set('Location', '/login/mfa');
+      ctx.response.headers.set('Location', app_path + '/login/mfa');
     }
 
   }

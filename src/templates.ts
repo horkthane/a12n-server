@@ -13,11 +13,13 @@ export function render(name: string, params?: Params, renderLayoutWrapper = true
 
   const layoutTemplate = getTemplate('layout');
   const pageTemplate = getTemplate(name);
+  const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
   const newParams = {};
   Object.assign(newParams, params, {
     appName: 'Auth API',
-    logoUrl: getSetting('logo_url')
+    logoUrl: getSetting('logo_url'),
+    appPath: app_path
   });
 
   if (renderLayoutWrapper) {

@@ -3,36 +3,37 @@ import { getSetting } from '../../server-settings';
 import { Principal, ServerStats } from '../../types';
 
 export default (version: string, authenticatedUser: Principal, isAdmin: boolean, stats: ServerStats) => {
+  var app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
   const result: HalResource = {
     _links: {
-      'self': { href: '/', title: 'Home' },
-      'authenticated-as': { href: authenticatedUser.href, title: authenticatedUser.nickname },
-      'change-password': { href: '/change-password', title: 'Change password' },
+      'self': { href: app_path + '/', title: 'Home' },
+      'authenticated-as': { href: app_path + authenticatedUser.href, title: authenticatedUser.nickname },
+      'change-password': { href: app_path + '/change-password', title: 'Change password' },
 
-      'app-collection': { href: '/app', title: 'List of apps'},
-      'user-collection': { href: '/user', title: 'List of users'},
-      'group-collection': { href: '/group', title: 'List of groups'},
+      'app-collection': { href: app_path + '/app', title: 'List of apps'},
+      'user-collection': { href: app_path + '/user', title: 'List of users'},
+      'group-collection': { href: app_path + '/group', title: 'List of groups'},
       'logout': {
-        href: '/logout',
+        href: app_path + '/logout',
         title: 'Log out',
       },
       'privilege-collection': {
-        href: '/privilege',
+        href: app_path + '/privilege',
         title: 'List of available privileges',
       },
 
 
-      'authorize' : { href: '/authorize', title: 'OAuth2 authorize endpoint', type: 'text/html' },
+      'authorize' : { href: app_path + '/authorize', title: 'OAuth2 authorize endpoint', type: 'text/html' },
       'token': {
-        href: '/token',
+        href: app_path + '/token',
         title: 'OAuth2 Token Endpoint',
         hints: {
           allow: ['POST'],
         }
       },
       'introspect' : {
-        href: '/introspect',
+        href: app_path + '/introspect',
         title: 'OAuth2 Introspection Endpoint',
         hints: {
           allow: ['POST'],
@@ -40,17 +41,17 @@ export default (version: string, authenticatedUser: Principal, isAdmin: boolean,
       },
 
       'schema-collection': {
-        href: '/schema',
+        href: app_path + '/schema',
         title: 'List of JSON schemas for this API'
       },
 
       'oauth_server_metadata_uri' : {
-        href: '/.well-known/oauth-authorization-server',
+        href: app_path + '/.well-known/oauth-authorization-server',
         title: 'OAuth 2.0 Authorization Server Metadata'
       },
 
       'jwks': {
-        href: '/.well-known/jwks.json',
+        href: app_path + '/.well-known/jwks.json',
         title: 'JSON Web Key Set (JWKS)',
       }
     },
@@ -60,7 +61,7 @@ export default (version: string, authenticatedUser: Principal, isAdmin: boolean,
 
   if (getSetting('registration.enabled')) {
     result._links.registration = {
-      href: '/register',
+      href: app_path + '/register',
       title: 'Create a new user account',
       type: 'text/html'
     };
@@ -68,11 +69,11 @@ export default (version: string, authenticatedUser: Principal, isAdmin: boolean,
 
   if (isAdmin) {
     result._links['exchange-one-time-token'] = {
-      href: '/exchange-one-time-token',
+      href: app_path + '/exchange-one-time-token',
       title: 'Exchange a one-time token for a Access and Refresh token',
     };
     result._links['settings'] = {
-      href: '/settings',
+      href: app_path + '/settings',
       title: 'Server settings',
     };
   }

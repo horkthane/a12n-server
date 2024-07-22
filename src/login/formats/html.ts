@@ -1,13 +1,15 @@
 import { render } from '../../templates';
 type KeyValue = { [key: string]: string };
 
+const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
+
 export function loginForm(msg: string, error: string, hiddenFields: KeyValue, registrationEnabled: boolean, registrationUri: string, resetPasswordUri: string): string {
   return render('login', {
     title: 'Login',
     msg: msg,
     error: error,
     hiddenFields: hiddenFields,
-    action: '/login',
+    action: app_path + '/login',
     registrationEnabled,
     registrationUri,
     resetPasswordUri,
@@ -29,7 +31,7 @@ export function mfaForm(
     useTotp,
     useWebAuthn,
     hiddenFields: hiddenFields,
-    action: '/login/mfa',
+    action: app_path + '/login/mfa',
   });
 
 }

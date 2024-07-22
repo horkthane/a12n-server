@@ -89,6 +89,7 @@ class AuthorizeController extends Controller {
       scope: params.scope,
       principal: ctx.session.user,
       browserSessionId: ctx.sessionId!,
+      audience: ctx.request.body.audience,
     });
 
     ctx.status = 302;
@@ -148,8 +149,9 @@ class AuthorizeController extends Controller {
    */
   async redirectToLogin(ctx: Context, params: { [key: string]: string }) {
 
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     ctx.response.status = 302;
-    ctx.response.headers.set('Location', '/login?' + querystring.stringify(params));
+    ctx.response.headers.set('Location', app_path + '/login?' + querystring.stringify(params));
 
   }
 

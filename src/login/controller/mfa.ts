@@ -37,6 +37,7 @@ class MFAController extends Controller {
   async post(ctx: Context<any>) {
 
     const { user }: MFALoginSession = ctx.session.mfa || {};
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
     if (!user) {
       return this.redirectToLogin(ctx);
@@ -65,21 +66,23 @@ class MFAController extends Controller {
       ctx.response.headers.set('Location', ctx.request.body.continue);
       return;
     }
-    ctx.response.headers.set('Location', '/');
+    ctx.response.headers.set('Location', app_path + '/');
 
   }
 
   async redirectToMfa(ctx: Context, error: string) {
 
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     ctx.response.status = 303;
-    ctx.response.headers.set('Location', '/login/mfa?' + querystring.stringify({ error }));
+    ctx.response.headers.set('Location', app_path + '/login/mfa?' + querystring.stringify({ error }));
 
   }
 
   async redirectToLogin(ctx: Context) {
 
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     ctx.response.status = 303;
-    ctx.response.headers.set('Location', '/login');
+    ctx.response.headers.set('Location', app_path + '/login');
 
   }
 }

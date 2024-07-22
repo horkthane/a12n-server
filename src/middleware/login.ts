@@ -4,18 +4,20 @@ import * as oauth2Service from './../oauth2/service';
 import { App, User, Principal } from '../types';
 import * as privilegeService from '../privilege/service';
 
+var app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
+
 const whitelistPath = [
-  '/login',
-  '/assets',
-  '/health',
-  '/register',
-  '/authorize',
-  '/reset-password',
-  '/token',
-  '/introspect',
-  '/revoke',
-  '/.well-known/jwks.json',
-  '/.well-known/oauth-authorization-server',
+  app_path + '/login',
+  app_path + '/assets',
+  app_path + '/health',
+  app_path + '/register',
+  app_path + '/authorize',
+  app_path + '/reset-password',
+  app_path + '/token',
+  app_path + '/introspect',
+  app_path + '/revoke',
+  app_path + '/.well-known/jwks.json',
+  app_path + '/.well-known/oauth-authorization-server',
 ];
 
 declare module '@curveball/kernel' {
@@ -126,8 +128,9 @@ export default function(): Middleware {
     }
 
     // Not logged in.
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
     ctx.status = 303;
-    ctx.response.headers.set('Location', '/login?continue=' + encodeURIComponent(ctx.request.requestTarget));
+    ctx.response.headers.set('Location', app_path + '/login?continue=' + encodeURIComponent(ctx.request.requestTarget));
 
   };
 

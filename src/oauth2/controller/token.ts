@@ -45,6 +45,9 @@ class TokenController extends Controller {
       throw new UnsupportedGrantType('The current client is not allowed to use the ' + grantType + ' grant_type');
     }
 
+    if(ctx.request.body.audience == null)
+      ctx.request.body.audience = oauth2Client.app.href;
+
     scopes.forEach(function(value: string){
       if(!oauth2Client.scopes.includes(value)){
         throw new InvalidRequest('Client does not have access to the specified scope ' + value);
@@ -69,6 +72,7 @@ class TokenController extends Controller {
     const token = await oauth2Service.generateTokenClientCredentials({
       client: oauth2Client,
       scope: ctx.request.body.scope?.split(' ') ?? [],
+      audience: ctx.request.body.audience,
     });
 
     ctx.response.type = 'application/json';
@@ -93,6 +97,7 @@ class TokenController extends Controller {
       code: ctx.request.body.code,
       codeVerifier: ctx.request.body.code_verifier,
       secretUsed,
+      audience: ctx.request.body.audience,
     });
     if (!await oauth2Service.validateRedirectUri(oauth2Client, ctx.request.body.redirect_uri)) {
       await log(
@@ -165,7 +170,8 @@ class TokenController extends Controller {
     const token = await oauth2Service.generateTokenPassword({
       client: oauth2Client,
       principal: user,
-      scope
+      scope,
+      audience: ctx.request.body.audience,
     });
 
     ctx.response.type = 'application/json';

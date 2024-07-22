@@ -86,6 +86,7 @@ type GenerateTokenImplicitOptions = {
   principal: User;
   scope: string[];
   browserSessionId: string;
+  audience: string;
 }
 
 /**
@@ -102,6 +103,7 @@ export function generateTokenImplicit(options: GenerateTokenImplicitOptions): Pr
 type GenerateTokenClientCredentialsOptions = {
   client: OAuth2Client;
   scope: string[];
+  audience: string;
 }
 
 /**
@@ -120,6 +122,7 @@ type GenerateTokenPasswordOptions = {
   client: OAuth2Client;
   principal: User;
   scope: string[];
+  audience: string;
 }
 /**
  * Generates a token for the 'implicit' GrantType
@@ -137,6 +140,7 @@ type GenerateTokenAuthorizationCodeOptions = {
   code: string;
   codeVerifier?: string;
   secretUsed: boolean;
+  audience: string;
 }
 
 /**
@@ -245,12 +249,14 @@ export function generateTokenDeveloperToken(options: GenerateTokenDeveloperToken
     secretUsed: false,
     client,
     scope: [],
+    audience: "developer-audience",
   });
 }
 
 type GenerateTokenOneTimeTokenOptions = {
   client: OAuth2Client;
   principal: User;
+  audience: string;
 }
 /**
  * Generates a token for the 'implicit' GrantType
@@ -277,6 +283,7 @@ type GenerateTokenOptions = {
   client: OAuth2Client;
   principal: App |User;
   scope: string[];
+  audience: string;
   browserSessionId?: string;
   secretUsed: boolean;
 }
@@ -302,6 +309,7 @@ async function generateTokenInternal(options: GenerateTokenOptions): Promise<OAu
       client: options.client,
       expiry: expirySettings.accessToken,
       scope: options.scope,
+      audience: options.audience,
     });
   } else {
     accessToken = await generateSecretToken();
@@ -319,6 +327,7 @@ async function generateTokenInternal(options: GenerateTokenOptions): Promise<OAu
     refresh_token_expires: refreshTokenExpires,
     browser_session_id: options.browserSessionId || null,
     created_at: Math.trunc(Date.now() / 1000),
+    audience: options.audience,
   };
 
   await db('oauth2_tokens').insert(record);
@@ -338,6 +347,7 @@ async function generateTokenInternal(options: GenerateTokenOptions): Promise<OAu
     principal: options.principal,
     clientId: options.client.id,
     scope: options.scope,
+    audience: options.audience
   };
 
 }
@@ -400,6 +410,7 @@ export async function generateTokenFromRefreshToken(client: OAuth2Client, refres
     client,
     scope: oldToken.scope,
     secretUsed: oldToken.secretUsed,
+    audience: oldToken.audience,
   });
 
 }
@@ -613,7 +624,7 @@ function tokenRecordToModel(token: Oauth2TokensRecord, principal: User | App): O
 
     principal,
     clientId: token.oauth2_client_id,
-
+    audience: token.audience,
   };
 }
 
