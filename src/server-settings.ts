@@ -36,7 +36,7 @@ export type Settings = {
   'webauthn.relyingPartyId': string | null;
   'webauthn.serviceName': string;
   'logo_url': string;
-
+  'app.path': string;
 }
 
 export type SettingsRules = {
@@ -213,6 +213,12 @@ export const settingsRules: SettingsRules = {
     fromDb: true,
     default: null,
   },
+  'app.path': {
+    description: 'The path the application is running under',
+    env: "APP_PATH",
+    fromDb: false,
+    default: '',
+  }
 
 };
 

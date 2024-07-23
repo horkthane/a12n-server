@@ -1,5 +1,5 @@
 import bodyParser from '@curveball/bodyparser';
-import browser from '@curveball/browser';
+import browser, { Options } from '@curveball/browser';
 import cors from '@curveball/cors';
 import links from '@curveball/links';
 import problem from '@curveball/problem';
@@ -37,6 +37,17 @@ export default function (): Middleware {
     }));
   }
 
+  var browser_vars: Partial<Options> = {
+    title: 'a12n-server',    
+    stylesheets: [        
+      getSetting("app.path") + '/assets/extra.css'
+    ],    
+  }
+
+  if(getSetting("app.path") !== ''){
+    browser_vars.assetBaseUrl = process.env.PUBLIC_URI + 'assets/';
+  }
+
   middlewares.push(
     session({
       store: process.env.REDIS_HOST ? new RedisStore({
@@ -48,12 +59,7 @@ export default function (): Middleware {
       cookieName: 'A12N',
       expiry: 60 * 60 * 24 * 7,
     }),
-    browser({
-      title: 'a12n-server',
-      stylesheets: [
-        '/assets/extra.css'
-      ],
-    }),
+    browser(browser_vars),
     problem(),
 
     login(),

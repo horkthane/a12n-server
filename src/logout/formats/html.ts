@@ -1,3 +1,4 @@
+import { getSetting } from '../../server-settings';
 import { render } from '../../templates';
 
 export function logoutForm(msg: string, error: string, continueUri?: string) {
@@ -11,7 +12,7 @@ export function logoutForm(msg: string, error: string, continueUri?: string) {
     title: 'Logout',
     msg: msg,
     error: error,
-    action: '/logout',
+    action: getSetting("app.path") + '/logout',
     hiddenFields,
   });
 

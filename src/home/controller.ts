@@ -3,6 +3,7 @@ import { Context } from '@curveball/core';
 import hal from './formats/hal';
 import markdown from './formats/markdown';
 import { getServerStats } from './service';
+import { getSetting } from '../server-settings';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require('../../package.json').version;
@@ -21,9 +22,9 @@ class HomeController extends Controller {
     ctx.response.type = 'text/markdown';
     ctx.response.headers.set('Title', 'Home');
     ctx.response.headers.append('Link', [
-      '</>; rel="alternate"; type="application/hal+json"',
-      '</logout>; rel="logout"',
-      `<${user.href}>; rel="authenticated-as" title="${user.nickname.replace('"','')}"`,
+      `<${getSetting("app.path")}/>; rel="alternate"; type="application/hal+json"`,
+      `<${getSetting("app.path")}/logout>; rel="logout"`,
+      `<${getSetting("app.path")}${user.href}>; rel="authenticated-as" title="${user.nickname.replace('"','')}"`,
     ]);
     ctx.response.body = markdown(version, user, isAdmin, stats);
 

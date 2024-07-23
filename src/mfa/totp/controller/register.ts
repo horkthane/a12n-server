@@ -12,9 +12,10 @@ import { getSetting } from '../../../server-settings';
 class TOTPRegisterController extends Controller {
   async get(ctx: Context) {
     const user: User = ctx.session.registerUser;
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
     if (!user) {
-      return ctx.redirect(303, '/login');
+      return ctx.redirect(303, app_path + '/login');
     }
 
     const secret = ctx.session.totpSecret ? ctx.session.totpSecret : generateSecret();
@@ -35,9 +36,10 @@ class TOTPRegisterController extends Controller {
 
   async post(ctx: Context<any>) {
     const user: User = ctx.session.registerUser;
+    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
     if (!user) {
-      return ctx.redirect(303, '/login');
+      return ctx.redirect(303, app_path + '/login');
     }
 
     const { code } = ctx.request.body;

@@ -3,6 +3,7 @@ import { NotFound, Unauthorized } from '@curveball/http-errors';
 import * as oauth2Service from './../oauth2/service';
 import { App, User, Principal } from '../types';
 import * as privilegeService from '../privilege/service';
+import { getSetting } from '../server-settings';
 
 var app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
@@ -127,10 +128,9 @@ export default function(): Middleware {
       return next();
     }
 
-    // Not logged in.
-    const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
+    // Not logged in.    
     ctx.status = 303;
-    ctx.response.headers.set('Location', app_path + '/login?continue=' + encodeURIComponent(ctx.request.requestTarget));
+    ctx.response.headers.set('Location', getSetting("app.path") + '/login?continue=' + encodeURIComponent(ctx.request.requestTarget));
 
   };
 
