@@ -16,6 +16,7 @@ import {
   UnprocessableEntity,
 } from '@curveball/http-errors';
 import { generatePublicId } from '../crypto';
+import { getSetting } from '../server-settings';
 
 /**
  * This class provides a wrapper around the principal service APIs.
@@ -411,7 +412,7 @@ function recordToModel(user: PrincipalsRecord): Principal {
 
   return {
     id: user.id,
-    href: `/${userTypeIntToUserType(user.type)}/${user.external_id}`,
+    href: `${getSetting("app.path")}/${userTypeIntToUserType(user.type)}/${user.external_id}`,
     identity: user.identity,
     externalId: user.external_id,
     nickname: user.nickname!,

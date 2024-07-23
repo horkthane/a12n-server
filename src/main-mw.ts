@@ -46,6 +46,14 @@ export default function (): Middleware {
 
   if(getSetting("app.path") !== ''){
     browser_vars.assetBaseUrl = process.env.PUBLIC_URI + 'assets/';
+    browser_vars.defaultLinks = [
+      {
+        context: process.env.PUBLIC_URI,
+        href: process.env.PUBLIC_URI,
+        rel: 'home',
+        title: 'Home',
+      }
+    ];
   }
 
   middlewares.push(

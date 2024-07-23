@@ -23,7 +23,7 @@ class UserLogController extends Controller {
     ctx.response.headers.append(
       'Link',
       [
-        `</user/${user.id}>; rel=up; title="Back to user"`,
+        `<${user.href}>; rel=up; title="Back to user"`,
       ]
     );
     ctx.response.body = csv(log);

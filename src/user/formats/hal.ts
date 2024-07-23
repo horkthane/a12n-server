@@ -8,9 +8,9 @@ export function collection(users: User[]): HalResource {
 
   const hal: HalResource = {
     _links: {
-      'self': { href: '/user' },
+      'self': { href: `${getSetting("app.path")}/user` },
       'item': users.map( user => ({
-        href: getSetting("app.path") + user.href,
+        href: user.href,
         title: user.nickname,
       })),
       'create-form': { href: `${getSetting("app.path")}/user/new`, title: 'Create New User', type: 'text/html'},
@@ -38,12 +38,12 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
 
   const hal: HalResource = {
     _links: {
-      'self': {href: getSetting("app.path") + user.href, title: user.nickname },
+      'self': {href: user.href, title: user.nickname },
       'me': { href: user.identity, title: user.nickname },
-      'auth-log': { href: `${getSetting("app.path") + user.href}/log`, title: 'Authentication log', type: 'text/csv' },
+      'auth-log': { href: `${user.href}/log`, title: 'Authentication log', type: 'text/csv' },
       'up' : { href: `${getSetting("app.path")}/user`, title: 'List of users' },
       'group': groups.map( group => ({
-        href: getSetting("app.path") + group.href,
+        href: group.href,
         title: group.nickname,
       })),
 
@@ -62,7 +62,7 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
 
   if (hasControl || currentUserPrivileges.has('a12n:one-time-token:generate')) {
     hal._links['one-time-token'] = {
-      href: `${getSetting("app.path") + user.href}/one-time-token`,
+      href: `${user.href}/one-time-token`,
       title: 'Generate a one-time login token.',
       hints: {
         allow: ['POST'],
@@ -74,21 +74,21 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
     hal.hasPassword = hasPassword;
 
     hal._links['access-token'] = {
-      href: `${getSetting("app.path") + user.href}/access-token`,
+      href: `${user.href}/access-token`,
       title: 'Generate an access token for this user.',
     };
     hal._links['active-sessions'] = {
-      href: `${getSetting("app.path") + user.href}/sessions`,
+      href: `${user.href}/sessions`,
       title: 'Active user sessions'
     };
     hal._links['app-permission-collection'] = {
-      href: `${getSetting("app.path") + user.href}/app-permission`,
+      href: `${user.href}/app-permission`,
       title: 'App Permissions',
     };
   }
   if (currentUserPrivileges.has('a12n:user:change-password', user.href)) {
     hal._links['password'] = {
-      href: `${getSetting("app.path") + user.href}/password`,
+      href: `${user.href}/password`,
       title: 'Change user\'s password',
       hints: {
         allow: ['PUT'],
@@ -96,12 +96,12 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
     };
 
     hal._links['edit-form'] = {
-      href: `${getSetting("app.path") + user.href}/edit`,
+      href: `${user.href}/edit`,
       title: `Edit ${user.nickname}`
     };
 
     hal._links['privileges'] = {
-      href: `${getSetting("app.path") + user.href}/edit/privileges`,
+      href: `${user.href}/edit/privileges`,
       title: 'Change privilege policy',
     };
   }
@@ -114,10 +114,10 @@ export function edit(user: User): HalResource {
   return {
     _links: {
       self: {
-        href: `${getSetting("app.path") + user.href}/edit`,
+        href: `${user.href}/edit`,
       },
       up: {
-        href: getSetting("app.path") + user.href,
+        href: user.href,
         title: 'Cancel',
       },
     },
@@ -161,11 +161,11 @@ export function editPrivileges(principal: Principal, userPrivileges: PrivilegeMa
   return {
     _links: {
       self: {
-        href: `${getSetting("app.path") + principal.href}/edit/privileges`,
+        href: `${principal.href}/edit/privileges`,
         title: `Edit privileges for ${principal.nickname}`,
       },
       up: {
-        href: getSetting("app.path") + principal.href,
+        href: principal.href,
         title: 'Cancel',
       },
     },
@@ -189,7 +189,7 @@ export function editPrivileges(principal: Principal, userPrivileges: PrivilegeMa
         title: 'Add a single privilege',
         method: 'PATCH',
         contentType: 'application/json',
-        target: `${getSetting("app.path") + principal.href}/edit/privileges`,
+        target: `${principal.href}/edit/privileges`,
         properties: [
           {
             name: 'privilege',
