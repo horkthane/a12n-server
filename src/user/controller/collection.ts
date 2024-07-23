@@ -3,6 +3,7 @@ import { Context } from '@curveball/core';
 import { BadRequest, Conflict, NotFound } from '@curveball/http-errors';
 import * as hal from '../formats/hal';
 import { PrincipalService } from '../../principal/service';
+import { getSetting } from '../../server-settings';
 
 type NewPrincipalBody = {
   nickname: string;
@@ -52,7 +53,7 @@ class UserCollectionController extends Controller {
     });
 
     ctx.response.status = 201;
-    ctx.response.headers.set('Location', user.href);
+    ctx.response.headers.set('Location', getSetting("app.path") + user.href);
   }
 
 }

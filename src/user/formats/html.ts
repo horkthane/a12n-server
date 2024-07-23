@@ -1,3 +1,4 @@
+import { getSetting } from '../../server-settings';
 import { render } from '../../templates';
 
 type Options = {
@@ -16,7 +17,7 @@ export function createUserForm(options: Options) {
     title: 'Create User',
     msg: options.msg,
     error: options.error,
-    action: '/user/new',
+    action: getSetting("app.path") + '/user/new',
     hiddenFields,
   });
 }

@@ -5,6 +5,7 @@ import * as privilegeService from '../../privilege/service';
 import { PrivilegeMap } from '../../privilege/types';
 import * as hal from '../formats/hal';
 import { PrincipalService } from '../../principal/service';
+import { getSetting } from '../../server-settings';
 
 type PolicyForm = {
   policyBody: string;
@@ -50,7 +51,7 @@ class UserEditPrivilegesController extends Controller {
       throw new BadRequest(err);
     }
 
-    ctx.redirect(303, principal.href);
+    ctx.redirect(303, getSetting("app.path") + principal.href);
 
   }
 
@@ -72,11 +73,11 @@ class UserEditPrivilegesController extends Controller {
     ctx.response.body = {
       _links: {
         principal: {
-          href: principal.href,
+          href: getSetting("app.path") + principal.href,
           title: principal.nickname,
         },
         up: {
-          href: `${principal.href}/edit/privileges`,
+          href: `${getSetting("app.path") + principal.href}/edit/privileges`,
           title: 'Back to privileges',
         }
       },

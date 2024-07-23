@@ -2,6 +2,7 @@ import Controller from '@curveball/controller';
 import { Context } from '@curveball/core';
 import * as hal from '../formats/hal';
 import { PrincipalService } from '../../principal/service';
+import { getSetting } from '../../server-settings';
 
 class UserEditController extends Controller {
 
@@ -33,7 +34,7 @@ class UserEditController extends Controller {
 
     const user = await principalService.save(userUpdated);
 
-    ctx.redirect(303, `/user/${user.id}`);
+    ctx.redirect(303, `${getSetting("app.path")}/user/${user.id}`);
 
   }
 

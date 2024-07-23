@@ -2,6 +2,7 @@ import { PrivilegeMap } from '../../privilege/types';
 import { Principal, Group, User } from '../../types';
 import { HalResource } from 'hal-types';
 import { LazyPrivilegeBox } from '../../privilege/service';
+import { getSetting } from '../../server-settings';
 
 export function collection(users: User[]): HalResource {
 
@@ -9,13 +10,13 @@ export function collection(users: User[]): HalResource {
     _links: {
       'self': { href: '/user' },
       'item': users.map( user => ({
-        href: user.href,
+        href: getSetting("app.path") + user.href,
         title: user.nickname,
       })),
-      'create-form': { href: '/user/new', title: 'Create New User', type: 'text/html'},
+      'create-form': { href: `${getSetting("app.path")}/user/new`, title: 'Create New User', type: 'text/html'},
       'find-by-href': {
         title: 'Find a user through a identity/href (exact match)',
-        href: '/user/byhref/{href}',
+        href: `${getSetting("app.path")}/user/byhref/{href}`,
         templated: true,
       },
     },
@@ -37,12 +38,12 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
 
   const hal: HalResource = {
     _links: {
-      'self': {href: user.href, title: user.nickname },
+      'self': {href: getSetting("app.path") + user.href, title: user.nickname },
       'me': { href: user.identity, title: user.nickname },
-      'auth-log': { href: `${user.href}/log`, title: 'Authentication log', type: 'text/csv' },
-      'up' : { href: '/user', title: 'List of users' },
+      'auth-log': { href: `${getSetting("app.path") + user.href}/log`, title: 'Authentication log', type: 'text/csv' },
+      'up' : { href: `${getSetting("app.path")}/user`, title: 'List of users' },
       'group': groups.map( group => ({
-        href: group.href,
+        href: getSetting("app.path") + group.href,
         title: group.nickname,
       })),
 
@@ -61,7 +62,7 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
 
   if (hasControl || currentUserPrivileges.has('a12n:one-time-token:generate')) {
     hal._links['one-time-token'] = {
-      href: `${user.href}/one-time-token`,
+      href: `${getSetting("app.path") + user.href}/one-time-token`,
       title: 'Generate a one-time login token.',
       hints: {
         allow: ['POST'],
@@ -73,21 +74,21 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
     hal.hasPassword = hasPassword;
 
     hal._links['access-token'] = {
-      href: `${user.href}/access-token`,
+      href: `${getSetting("app.path") + user.href}/access-token`,
       title: 'Generate an access token for this user.',
     };
     hal._links['active-sessions'] = {
-      href: `${user.href}/sessions`,
+      href: `${getSetting("app.path") + user.href}/sessions`,
       title: 'Active user sessions'
     };
     hal._links['app-permission-collection'] = {
-      href: `${user.href}/app-permission`,
+      href: `${getSetting("app.path") + user.href}/app-permission`,
       title: 'App Permissions',
     };
   }
   if (currentUserPrivileges.has('a12n:user:change-password', user.href)) {
     hal._links['password'] = {
-      href: `${user.href}/password`,
+      href: `${getSetting("app.path") + user.href}/password`,
       title: 'Change user\'s password',
       hints: {
         allow: ['PUT'],
@@ -95,12 +96,12 @@ export function item(user: User, privileges: PrivilegeMap, hasControl: boolean, 
     };
 
     hal._links['edit-form'] = {
-      href: `${user.href}/edit`,
+      href: `${getSetting("app.path") + user.href}/edit`,
       title: `Edit ${user.nickname}`
     };
 
     hal._links['privileges'] = {
-      href: `${user.href}/edit/privileges`,
+      href: `${getSetting("app.path") + user.href}/edit/privileges`,
       title: 'Change privilege policy',
     };
   }
@@ -113,10 +114,10 @@ export function edit(user: User): HalResource {
   return {
     _links: {
       self: {
-        href: `${user.href}/edit`,
+        href: `${getSetting("app.path") + user.href}/edit`,
       },
       up: {
-        href: user.href,
+        href: getSetting("app.path") + user.href,
         title: 'Cancel',
       },
     },
@@ -160,11 +161,11 @@ export function editPrivileges(principal: Principal, userPrivileges: PrivilegeMa
   return {
     _links: {
       self: {
-        href: `${principal.href}/edit/privileges`,
+        href: `${getSetting("app.path") + principal.href}/edit/privileges`,
         title: `Edit privileges for ${principal.nickname}`,
       },
       up: {
-        href: principal.href,
+        href: getSetting("app.path") + principal.href,
         title: 'Cancel',
       },
     },
@@ -188,7 +189,7 @@ export function editPrivileges(principal: Principal, userPrivileges: PrivilegeMa
         title: 'Add a single privilege',
         method: 'PATCH',
         contentType: 'application/json',
-        target: `${principal.href}/edit/privileges`,
+        target: `${getSetting("app.path") + principal.href}/edit/privileges`,
         properties: [
           {
             name: 'privilege',
