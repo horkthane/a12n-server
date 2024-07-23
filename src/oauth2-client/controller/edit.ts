@@ -3,9 +3,10 @@ import { Context } from '@curveball/core';
 import * as hal from '../formats/hal';
 import { Forbidden, NotFound, UnprocessableEntity } from '@curveball/http-errors';
 import { PrincipalService } from '../../principal/service';
-import { findByClientId, edit } from '../service';
+import { findByClientId, edit, setSecret } from '../service';
 import * as oauth2Service from '../../oauth2/service';
 import { GrantType } from '../../types';
+
 
 class EditClientController extends Controller {
 
@@ -54,6 +55,10 @@ class EditClientController extends Controller {
     }
     if (ctx.request.body.allowPassword) {
       allowedGrantTypes.push('password');
+    }
+    var newClientSecret = ctx.request.body.newClientSecret.trim();
+    if (newClientSecret !== '') {
+      setSecret(client, ctx.request.body.newClientSecret);
     }
 
     const redirectUris = ctx.request.body.redirectUris.trim().split(/\r\n|\n/).filter((line:string) => !!line);

@@ -134,6 +134,12 @@ export function editForm(client: OAuth2Client, redirectUris: string[]): HalResou
             type: 'checkbox',
             value: client.requirePkce ? 'true' : '',
           },
+          {
+            name: 'newClientSecret',
+            prompt: 'Overwrite client secret',
+            type: 'text',
+            value: '',
+          }
         ],
       }
     }

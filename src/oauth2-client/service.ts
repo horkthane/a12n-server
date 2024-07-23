@@ -169,6 +169,7 @@ export async function edit(client: OAuth2Client, redirectUris: string[]): Promis
     allowed_grant_types: client.allowedGrantTypes.join(' '),
     scopes: client.scopes.join(' '),
     require_pkce: client.requirePkce?1:0,
+
   };
 
   await db.transaction(async trx => {
@@ -181,12 +182,22 @@ export async function edit(client: OAuth2Client, redirectUris: string[]): Promis
       await trx('oauth2_redirect_uris').insert({oauth2_client_id: client.id, uri});
 
     }
-  });
-
+  });  
 }
 
 export async function validateSecret(oauth2Client: OAuth2Client, secret: string): Promise<boolean> {
 
   return await bcrypt.compare(secret, oauth2Client.clientSecret);
 
+}
+
+export async function setSecret(client: OAuth2Client, secret: string): Promise<void> {
+  const params: Partial<Oauth2ClientsRecord> = {
+    client_secret: await bcrypt.hash(secret, 12),
+  };
+
+  await db.transaction(async trx => {
+
+    await trx('oauth2_clients').update(params).where({id: client.id});        
+  }); 
 }
