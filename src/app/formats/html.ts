@@ -1,6 +1,5 @@
+import { getSetting } from '../../server-settings';
 import { render } from '../../templates';
-
-const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
 type Options = {
   csrfToken: string;
@@ -40,7 +39,7 @@ export function createAppForm(options: Options) {
     title: 'Create App',
     msg: options.msg,
     error: options.error,
-    action: app_path + '/app/new',
+    action: `${getSetting("app.path")}/app/new`,
     nickname: options.nickname,
     url: options.url,
     hiddenFields

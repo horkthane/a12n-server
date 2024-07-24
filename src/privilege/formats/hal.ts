@@ -1,3 +1,4 @@
+import { getSetting } from '../../server-settings';
 import { Privilege, PrivilegeEntry } from '../types';
 import { HalResource } from 'hal-types';
 
@@ -5,13 +6,13 @@ export function collection(privileges: Privilege[]): HalResource {
 
   return {
     _links: {
-      self: { href: '/privilege' },
+      self: { href: `${getSetting("app.path")}/privilege` },
       item: privileges.map(privilege => ({
-        href: '/privilege/' + privilege.privilege,
+        href: getSetting("app.path") + '/privilege/' + privilege.privilege,
         title: privilege.description
       })),
       'search-resource-privileges': {
-        href: '/privilege-search{?resource}',
+        href: getSetting("app.path") + '/privilege-search{?resource}',
         title: 'Search privileges by resource',
         templated: true,
       }
@@ -25,10 +26,10 @@ export function item(privilege: Privilege): HalResource {
   return {
     _links: {
       self: {
-        href: '/privilege/' + privilege.privilege
+        href: getSetting("app.path") + '/privilege/' + privilege.privilege
       },
       collection: {
-        href: '/privilege',
+        href: getSetting("app.path") + '/privilege',
         title: 'Privilege Collection'
       }
     },
@@ -42,7 +43,7 @@ export function search(resource: string, privileges: PrivilegeEntry[]): HalResou
   return {
     _links: {
       self: {
-        href: `/privilege-search?resource=${encodeURIComponent(resource)}`,
+        href: `${getSetting("app.path")}/privilege-search?resource=${encodeURIComponent(resource)}`,
         title: 'Privilege Search Results',
       },
       about: {

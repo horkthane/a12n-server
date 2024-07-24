@@ -1,6 +1,7 @@
 import { Group, Principal } from '../../types';
 import { HalResource, HalFormsTemplate } from 'hal-types';
 import { PrivilegeMap } from '../../privilege/types';
+import { getSetting } from '../../server-settings';
 
 export function memberCollection(group: Group, members: Principal[]): HalResource {
 
@@ -26,12 +27,12 @@ export function collection(groups: Group[]): HalResource {
 
   const hal: HalResource = {
     _links: {
-      'self': { href: '/group' },
+      'self': { href: `${getSetting("app.path")}/group` },
       'item': groups.map( group => ({
         href: group.href,
         title: group.nickname,
       })),
-      'create-form': { href: '/group/new', title: 'Create New Group'},
+      'create-form': { href: `${getSetting("app.path")}/group/new`, title: 'Create New Group'},
     },
     total: groups.length,
   };
@@ -49,7 +50,7 @@ export function item(group: Group, privileges: PrivilegeMap, isAdmin: boolean, g
     _links: {
       self: {href: group.href, title: group.nickname },
       me: { href: group.identity, title: group.nickname },
-      up : { href: '/group', title: 'List of groups' },
+      up : { href: `${getSetting("app.path")}/group`, title: 'List of groups' },
       group: groups.map( group => ({
         href: group.href,
         title: group.nickname,
@@ -100,7 +101,7 @@ export function itemAllUsers(group: Group, privileges: PrivilegeMap, isAdmin: bo
     _links: {
       'self': {href: group.href, title: group.nickname },
       'me': { href: group.identity, title: group.nickname },
-      'up' : { href: '/group', title: 'List of groups' },
+      'up' : { href: `${getSetting("app.path")}/group`, title: 'List of groups' },
       'describedby': {
         href: 'https://curveballjs.org/schemas/a12nserver/group.json',
         type: 'application/schema+json',

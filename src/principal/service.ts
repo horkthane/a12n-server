@@ -106,7 +106,7 @@ export class PrincipalService {
 
       return {
         id: result,
-        href: `/${principal.type}/${externalId}`,
+        href: `${getSetting("app.path")}/${principal.type}/${externalId}`,
         externalId,
         system: false,
         ...principal,

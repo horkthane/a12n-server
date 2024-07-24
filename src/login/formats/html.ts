@@ -1,7 +1,6 @@
+import { getSetting } from '../../server-settings';
 import { render } from '../../templates';
 type KeyValue = { [key: string]: string };
-
-const app_path = process.env.APP_PATH ? process.env.APP_PATH : "";
 
 export function loginForm(msg: string, error: string, hiddenFields: KeyValue, registrationEnabled: boolean, registrationUri: string, resetPasswordUri: string): string {
   return render('login', {
@@ -9,7 +8,7 @@ export function loginForm(msg: string, error: string, hiddenFields: KeyValue, re
     msg: msg,
     error: error,
     hiddenFields: hiddenFields,
-    action: app_path + '/login',
+    action: `${getSetting("app.path")}/login`,
     registrationEnabled,
     registrationUri,
     resetPasswordUri,
@@ -31,7 +30,7 @@ export function mfaForm(
     useTotp,
     useWebAuthn,
     hiddenFields: hiddenFields,
-    action: app_path + '/login/mfa',
+    action: `${getSetting("app.path")}/login/mfa`,
   });
 
 }

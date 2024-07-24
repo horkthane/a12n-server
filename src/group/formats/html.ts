@@ -1,3 +1,4 @@
+import { getSetting } from '../../server-settings';
 import { render } from '../../templates';
 
 type Options = {
@@ -16,7 +17,7 @@ export function createGroupForm(options: Options) {
     title: 'Create Group',
     msg: options.msg,
     error: options.error,
-    action: '/group/new',
+    action: `${getSetting("app.path")}/group/new`,
     hiddenFields,
   });
 }

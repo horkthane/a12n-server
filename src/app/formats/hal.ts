@@ -1,3 +1,4 @@
+import { getSetting } from '../../server-settings';
 import { PrivilegeMap } from '../../privilege/types';
 import { Group, App } from '../../types';
 import { HalResource } from 'hal-types';
@@ -6,12 +7,12 @@ export function collection(apps: App[]): HalResource {
 
   const hal: HalResource = {
     _links: {
-      'self': { href: '/app' },
+      'self': { href: `${getSetting("app.path")}/app` },
       'item': apps.map( app => ({
         href: app.href,
         title: app.nickname,
       })),
-      'create-form': { href: '/app/new', title: 'Add new App'},
+      'create-form': { href: `${getSetting("app.path")}/app/new`, title: 'Add new App'},
     },
     total: apps.length,
   };
@@ -33,7 +34,7 @@ export function item(app: App, privileges: PrivilegeMap, isAdmin: boolean, group
     _links: {
       'self': {href: app.href, title: app.nickname },
       'me': { href: app.identity, title: app.nickname },
-      'up' : { href: '/app', title: 'List of apps' },
+      'up' : { href: `${getSetting("app.path")}/app`, title: 'List of apps' },
       'group': groups.map( group => ({
         href: group.href,
         title: group.nickname,
