@@ -1,4 +1,5 @@
 import * as bcrypt from 'bcrypt';
+import * as jose from 'jose'
 import { Context } from '@curveball/core';
 import { NotFound, Unauthorized, Conflict } from '@curveball/http-errors';
 import { Oauth2ClientsRecord } from 'knex/types/tables';
@@ -9,6 +10,7 @@ import db, { insertAndGetId } from '../database';
 import { InvalidRequest } from '../oauth2/errors';
 import parseBasicAuth from './parse-basic-auth';
 import { App, GrantType, OAuth2Client } from '../types';
+import { X509Certificate } from 'crypto';
 
 export async function findByClientId(clientId: string): Promise<OAuth2Client> {
 
@@ -74,6 +76,40 @@ function mapRecordToModel(record: Oauth2ClientsRecord, app: App): OAuth2Client {
     requirePkce: !!record.require_pkce,
     scopes: record.scopes.split(' '),
   };
+
+}
+
+export async function getOAuth2ClientFromSignature(ctx: Context): Promise<OAuth2Client> {
+  
+  let oauth2Client: OAuth2Client;
+  var sig: string | null;
+  var body: string;
+  body = ctx.state['rawBody'];
+  sig = ctx.request.headers.get('x-utm-message-signature');
+
+  if (!ctx.request.body.client_id) {
+    throw new InvalidRequest('The "client_id" property is required');
+  }
+
+  try {
+    oauth2Client = await findByClientId(ctx.request.body.client_id);
+  } catch (e) {
+    if (e instanceof NotFound) {
+      throw new Unauthorized('Client id or signature incorrect', 'Basic');
+    } else {
+      // Rethrow
+      throw e;
+    }
+  }
+
+  if(sig == null){
+    throw new Unauthorized('x-utm-message-signature header is required');
+  }
+  if (!await validateSignature(oauth2Client, body, sig)) {
+    throw new Unauthorized('Client id or signature incorrect', 'Basic');
+  }
+
+  return oauth2Client;
 
 }
 
@@ -190,6 +226,62 @@ export async function validateSecret(oauth2Client: OAuth2Client, secret: string)
   return await bcrypt.compare(secret, oauth2Client.clientSecret);
 
 }
+
+export async function validateSignature(oauth2Client: OAuth2Client, body: string, sig: string): Promise<boolean> {
+  try{
+    var sig_split: string[] = sig.split('.');
+    var body_encode: string = jose.base64url.encode(body);
+    var complete_sig: string = sig_split[0] + '.' + body_encode + '.' + sig_split[2];
+    console.log(complete_sig);
+    const jwt_headers: jose.ProtectedHeaderParameters = jose.decodeProtectedHeader(complete_sig);
+    if(jwt_headers.x5u == null)
+      return false;
+
+    var key_ext = jwt_headers.x5u.substring(jwt_headers.x5u.length - 3);
+    var pemText: string;
+    console.log(key_ext);
+    if(key_ext == 'der'){
+      var response: Response = await fetch(jwt_headers.x5u);
+      var derBuffer: Buffer = Buffer.from(await response.arrayBuffer());
+      const prefix = '-----BEGIN CERTIFICATE-----\n';
+      const postfix = '-----END CERTIFICATE-----';
+      const derString: string = derBuffer.toString('base64');
+      if(derString == null)
+        return false;
+      const derStringSplit = derString.match(/.{0,64}/g);
+      if(derStringSplit == null)
+        return false;
+      pemText = prefix + derStringSplit.join('\n') + postfix;
+    }
+    else if(key_ext == 'pem'){
+      var response: Response = await fetch(jwt_headers.x5u);
+      pemText = await response.text();
+    } else {
+      return false;
+    }
+
+    console.log(pemText);
+    var x509: X509Certificate = new X509Certificate(pemText);
+    var key: jose.KeyLike = await jose.importX509(pemText, 'RS256');
+    
+    if(!x509.checkHost(oauth2Client.clientId)){
+      console.error("hostname does not match x509 cert");
+      return false;
+    }
+    
+    //var verify: jose.JWTVerifyResult = await jose.jwtVerify(complete_sig, key);    
+    await jose.compactVerify(complete_sig, key);
+    return true;
+
+  } catch (err: any) {
+
+    console.error(err);
+    throw new Unauthorized('Client id or signature incorrect', 'Basic');
+
+  }
+  return false;
+}
+
 
 export async function setSecret(client: OAuth2Client, secret: string): Promise<void> {
   const params: Partial<Oauth2ClientsRecord> = {

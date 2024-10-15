@@ -10,6 +10,7 @@ import * as oauth2Service from '../service';
 import {
   getOAuth2ClientFromBasicAuth,
   getOAuth2ClientFromBody,
+  getOAuth2ClientFromSignature,
 } from '../../oauth2-client/service';
 import * as userAppPermissions from '../../user-app-permissions/service';
 
@@ -32,6 +33,9 @@ class TokenController extends Controller {
     let secretUsed: boolean;
     if (ctx.request.headers.has('Authorization')) {
       oauth2Client = await getOAuth2ClientFromBasicAuth(ctx);
+      secretUsed = true;
+    } else if (ctx.request.headers.has('x-utm-message-signature')){
+      oauth2Client = await getOAuth2ClientFromSignature(ctx);
       secretUsed = true;
     } else {
       if (!['authorization_code', 'refresh_token'].includes(grantType)) {

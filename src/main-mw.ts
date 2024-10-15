@@ -1,4 +1,4 @@
-import bodyParser from '@curveball/bodyparser';
+import bodyParser from './bodyparser';
 import browser, { Options } from '@curveball/browser';
 import cors from '@curveball/cors';
 import links from '@curveball/links';
