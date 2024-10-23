@@ -232,14 +232,14 @@ export async function validateSignature(oauth2Client: OAuth2Client, body: string
     var sig_split: string[] = sig.split('.');
     var body_encode: string = jose.base64url.encode(body);
     var complete_sig: string = sig_split[0] + '.' + body_encode + '.' + sig_split[2];
-    console.log(complete_sig);
+    //console.log(complete_sig);
     const jwt_headers: jose.ProtectedHeaderParameters = jose.decodeProtectedHeader(complete_sig);
     if(jwt_headers.x5u == null)
       return false;
 
     var key_ext = jwt_headers.x5u.substring(jwt_headers.x5u.length - 3);
     var pemText: string;
-    console.log(key_ext);
+    //console.log(key_ext);
     if(key_ext == 'der'){
       var response: Response = await fetch(jwt_headers.x5u);
       var derBuffer: Buffer = Buffer.from(await response.arrayBuffer());
@@ -260,16 +260,34 @@ export async function validateSignature(oauth2Client: OAuth2Client, body: string
       return false;
     }
 
-    console.log(pemText);
+    //console.log(pemText);
     var x509: X509Certificate = new X509Certificate(pemText);
     var key: jose.KeyLike = await jose.importX509(pemText, 'RS256');
     
+    var validFrom: Date = new Date(x509.validFrom);
+    var validTo: Date = new Date(x509.validTo);
+    var now: Date = new Date();
+
+    //console.log("from = " + validFrom.toISOString() + ", now = " + now.toISOString() + ", to = " + validTo.toISOString());
+
+    if(validFrom > now || now > validTo){
+      console.error("certificate is outside of valid timerange.  from = " + validFrom.toISOString() + ", now = " + now.toISOString() + ", to = " + validTo.toISOString())
+      return false;
+    }
+
     if(!x509.checkHost(oauth2Client.clientId)){
       console.error("hostname does not match x509 cert");
       return false;
     }
     
-    //var verify: jose.JWTVerifyResult = await jose.jwtVerify(complete_sig, key);    
+    console.error(x509.issuer);
+    console.error(x509.subject);    
+
+    if(x509.issuer === x509.subject){
+      console.error("self signed cert");
+      return false;
+    }
+
     await jose.compactVerify(complete_sig, key);
     return true;
 
